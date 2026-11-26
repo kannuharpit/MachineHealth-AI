@@ -1,159 +1,100 @@
-# JobGuard-ML
+# AI-Based Predictive Maintenance System
 
-**Machine Learning and NLP for Job Posting Fraud Detection**
+**Portfolio maintainer: Arpit Gupta | M.Tech Computer Science and Engineering**
 
-![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-orange?logo=scikitlearn&logoColor=white)
-![NLP](https://img.shields.io/badge/NLP-TF--IDF-blueviolet)
-![Streamlit](https://img.shields.io/badge/Streamlit-Web%20App-red?logo=streamlit&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-F7931E?logo=scikitlearn&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
 
 ## Overview
 
-JobGuard-ML is a binary classification application that analyzes job advertisements for potential fraud. It combines natural language processing with structured employment information to produce a predicted classification and an estimated fraud probability through an interactive Streamlit interface.
+A supervised machine learning application that estimates the risk of CNC machine failure from operating parameters and presents the results through an interactive Streamlit dashboard. The application combines a binary classification model with rule-based maintenance suggestions.
 
-The objective is to explore how supervised learning can support preliminary screening of suspicious job listings while accounting for imbalanced classes and false alarms.
+This portfolio project is based on an existing open-source implementation. My focus is on understanding the ML workflow, reproducing the application locally, and improving its evaluation.
 
-## Key Features
+## Features
 
-- Interactive form for entering job advertisement details.
-- NLP-based text cleaning and numerical feature extraction.
-- Combined textual and structured job attributes.
+- Interactive input form for six machine operating parameters.
+- Machine health classification and estimated failure probability using XGBoost.
 - Comparison of multiple supervised classification algorithms.
-- Class-imbalance handling and hyperparameter search.
-- Prediction interface with estimated fraud probability.
-- Evaluation reports, ROC curves, confusion matrices and feature importance plots.
-
-## System Architecture
-
-```mermaid
-flowchart TD
-    A[Job posting dataset] --> B[Data preprocessing]
-    B --> C[Stratified train and test split]
-    C --> D[Text and structured feature extraction]
-    D --> E[Model training and tuning]
-    E --> F[Evaluation reports]
-    E --> G[Saved Logistic Regression and preprocessing artifacts]
-    H[Streamlit job input] --> I[Prediction preprocessing]
-    I --> J[Model inference]
-    G --> J
-    J --> K[Classification and fraud probability]
-```
-
-## Technology Stack
-
-| Area | Technologies |
-| --- | --- |
-| Language | Python |
-| Data processing | Pandas, NumPy |
-| Text representation | TF-IDF, CountVectorizer |
-| Machine learning | Scikit-learn, XGBoost |
-| Imbalanced learning | imbalanced-learn, SMOTE |
-| Model persistence | Joblib |
-| User interface | Streamlit |
+- Rule-based identification of possible failure factors and maintenance suggestions.
+- Visualization of predicted machine health and model evaluation results.
 
 ## Dataset
 
-The demonstration uses generated job advertisements with a schema inspired by the [Real or Fake? Fake Job Posting Prediction dataset](https://www.kaggle.com/datasets/shivamb/real-or-fake-fake-jobposting-prediction) published by Shivam Bansal on Kaggle.
+The project uses the AI4I 2020 Predictive Maintenance dataset, a synthetic dataset designed to represent industrial machine operating conditions. The local project includes `predictive_maintenance.csv`.
 
-Inputs include job titles, descriptions, qualifications, company information and employment attributes. The target variable is `fraudulent`, with `0` representing a legitimate listing and `1` representing a fraudulent listing.
+[Dataset source (Kaggle)](https://www.kaggle.com/datasets/stephanmatzka/predictive-maintenance-dataset-ai4i-2020)
 
-The bundled synthetic data is intended for experimentation. It should not be confused with the original real-world dataset. See [dataset documentation](data/DATA_SOURCE.md) for source and licensing information.
-
-## Machine Learning Pipeline
-
-The training script uses a stratified 80:20 training/test split. Text vectorizers and feature scaling are fitted using the training partition. SMOTE is applied to a training-data variant, and class weighting is used in several models to address the minority fraud class.
-
-| Algorithm | Role in the pipeline |
+| Input feature | Unit / values |
 | --- | --- |
-| Logistic Regression | TF-IDF classification baseline and tuned deployment model |
-| Multinomial Naive Bayes | Count-based text classification baseline |
-| Random Forest | Tree-ensemble comparison |
-| Linear SVM | Linear classifier with probability calibration |
-| XGBoost | Boosted-tree comparison |
+| Machine type | L, M, H |
+| Air temperature | Kelvin |
+| Process temperature | Kelvin |
+| Rotational speed | RPM |
+| Torque | Nm |
+| Tool wear | Minutes |
 
-Randomized hyperparameter search is included for Logistic Regression and XGBoost. The training script exports the tuned Logistic Regression estimator with its associated vectorizer, scaler and structured feature configuration for inference.
+Target: `0` = no failure; `1` = failure.
 
-## Model Evaluation
+## Machine Learning Workflow
 
-The evaluation pipeline measures accuracy, precision, recall, F1-score and ROC-AUC. Fraud-class recall measures how many fraudulent listings are detected; precision reflects how many flagged listings actually belong to the fraud class.
+1. Load the CSV and remove identifier columns.
+2. Encode categorical features and scale numerical features.
+3. Split data into training and testing sets (80:20 in the existing implementation).
+4. Train and compare classification models.
+5. Evaluate using accuracy, precision, recall, F1-score and ROC-AUC.
+6. Use XGBoost to generate predictions in the dashboard and apply rule-based suggestions.
 
-The checked-in [model comparison report](reports/model_comparison.csv) records perfect scores on the demonstration data. These are synthetic-data results, not evidence of perfect real-world detection. Independent validation on authentic job advertisements is needed before drawing practical performance conclusions.
+The inherited training pipeline includes Logistic Regression, Decision Tree, Random Forest, KNN, SVM, Naive Bayes, AdaBoost, Gradient Boosting, XGBoost and LightGBM.
 
-Additional plots and reports are stored in the [`reports/`](reports/) directory.
+## Technology Stack
 
-## Repository Structure
+Python, Pandas, NumPy, Scikit-learn, XGBoost, LightGBM, Matplotlib and Streamlit.
+
+## Project Structure
 
 ```text
-JobGuard-ML/
-├── app/
-│   └── app.py
-├── data/
-│   ├── fake_job_postings.csv
-│   └── DATA_SOURCE.md
-├── models/
-├── reports/
-├── src/
-│   ├── download_data.py
-│   ├── eda.py
-│   ├── evaluate.py
-│   ├── features.py
-│   ├── generate_synthetic_data.py
-│   ├── predict.py
-│   ├── preprocess.py
-│   └── train.py
-├── requirements.txt
-└── README.md
+app.py                      # Streamlit interface and prediction display
+model.py                    # Data preprocessing and model training
+predictive_maintenance.csv  # Dataset
+requirements.txt            # Python dependencies
+pictures/                   # Original project screenshots
+LICENSE                     # Original license
+README.md                   # Project documentation
 ```
 
-## Installation and Usage
+## Installation and Execution
 
-### 1. Clone the repository
+Open the project folder containing `app.py` in VS Code. In a Windows PowerShell terminal, set up an environment if you do not already have one:
 
 ```powershell
-git clone https://github.com/kannuharpit/JobGuard-ML.git
-cd JobGuard-ML
+python -m venv "$env:USERPROFILE\mlenv"
+& "$env:USERPROFILE\mlenv\Scripts\python.exe" -m pip install -r requirements.txt
 ```
 
-### 2. Set up the Python environment
-
-The following commands are for Windows PowerShell. Python 3.10 was used for local testing.
+Ensure `predictive_maintenance.csv` is in the project root. To launch the application using the existing environment:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+& "$env:USERPROFILE\mlenv\Scripts\python.exe" -m streamlit run app.py
 ```
 
-### 3. Train the model
+Open <http://localhost:8501> in a browser. Keep the terminal running and press `Ctrl+C` to stop the server.
 
-```powershell
-.\.venv\Scripts\python.exe src/train.py
-```
+The application initializes model training at startup; a separate training command is not needed for normal use.
 
-If the demo dataset is missing, run `src/generate_synthetic_data.py` before training. Retrain when serialized model artifacts are incompatible with the installed Scikit-learn version. Only load trusted Joblib or pickle files.
+## My Contributions — Arpit Gupta
 
-### 4. Launch the application
+- Configured a local Python 3.10 environment and installed the project dependencies.
+- Resolved environment setup issues and reproduced the Streamlit application locally.
+- Ran the training pipeline and inspected the training logs, including the six input features and class imbalance among 8,000 training samples.
+- Reorganized the project documentation with reproducible Windows launch instructions.
 
-```powershell
-.\.venv\Scripts\python.exe -m streamlit run app/app.py
-```
+## Limitations and Planned Improvements
 
-Visit [http://localhost:8501](http://localhost:8501) in your browser. Enter the job information and submit the form to view the predicted label and estimated probability.
+- The training data is imbalanced; accuracy alone is not sufficient to evaluate failure detection.
+- Fit preprocessing transformations on training data only to reduce data leakage risk, and verify consistent feature encoding at inference.
+- Add a confusion matrix and compare minority-class recall and precision.
+- Validate model performance before reporting any accuracy score as a personal result.
+- Maintenance suggestions are educational, not validated industrial safety recommendations.
 
-## Technical Contributions
-
-**Repository maintainer: Arpit Gupta — M.Tech, Computer Science and Engineering**
-
-- Reproduced the existing ML workflow in a local Python environment.
-- Investigated serialized-estimator compatibility problems with Scikit-learn.
-- Retrained the classifier and verified the Streamlit prediction workflow locally.
-- Examined prediction behavior on sample advertisements, including a possible false positive.
-- Improved reproducibility through updated execution and troubleshooting documentation.
-
-## Limitations and Future Work
-
-- Evaluate the classifier on a real-world dataset using an independent holdout set.
-- Investigate false positives and false negatives using realistic postings.
-- Select an operating threshold based on the precision–recall trade-off.
-- Assess generalization to unfamiliar employers, industries and writing styles.
-
-A model prediction is a screening signal, not proof of fraud. The application is a demonstration and should not be used as the sole basis for employment decisions.
